@@ -21,8 +21,21 @@ public class PlayerController : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            WorldManager.instance.SaveWorld("SaveData.dat", this);
+            WorldManager.instance.SaveWorld("SaveData.dat");
         }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            WorldManager.instance.LoadWorld("SaveData.dat");
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+       if (other.CompareTag("Collectible"))
+       {
+            other.GetComponent<CollectibleBase>().OnCollected(playerData);
+            Destroy(other.gameObject);
+       }
     }
 }
 
