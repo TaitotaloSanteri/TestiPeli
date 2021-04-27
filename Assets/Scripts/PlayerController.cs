@@ -8,6 +8,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (UIManager.isPaused)
+            return;
+        playerData.playTime += Time.deltaTime;
         float xAxis = Input.GetAxisRaw("Horizontal");
         float zAxis = Input.GetAxisRaw("Vertical");
 
@@ -18,14 +21,6 @@ public class PlayerController : MonoBehaviour
         if (zAxis != 0f)
         {
             transform.position += transform.forward * zAxis * playerData.moveSpeed * Time.deltaTime;
-        }
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            WorldManager.instance.SaveWorld("SaveData.dat");
-        }
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            WorldManager.instance.LoadWorld("SaveData.dat");
         }
     }
 

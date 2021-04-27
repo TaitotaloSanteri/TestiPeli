@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -54,13 +55,12 @@ public class WorldManager : MonoBehaviour
         CollectibleBase[] collectibles = world.GetComponentsInChildren<CollectibleBase>();
 
         // WorldDataan tallennetaan kaikki maailman tiedot, jotka siirret‰‰n tiedostoon.
-        WorldData worldData = new WorldData();
+        WorldData worldData = new WorldData() { dateAndTime = DateTime.Now.ToString()};
         // Tallennetaan WorldData playerData muuttujaan kaikki tiedot, mukaan lukien
         // pelaajan positio + rotaatio
         worldData.playerData = pc.playerData;
         worldData.playerData.position = pc.transform.position;
         worldData.playerData.rotation = pc.transform.rotation;
-        worldData.playerData.playTime = pc.playerData.playTime + Time.realtimeSinceStartup;
 
         // Alustetaan worlddatasta lˆytyv‰ CollectibleData taulukko. T‰m‰ on tietenkin yht‰ suuri
         // kuin maailmasta lˆytyvien ker‰tt‰vien m‰‰r‰.
@@ -107,6 +107,16 @@ public class WorldManager : MonoBehaviour
         Debug.Log($"Component {componentName} not found in any of the objects in WorldObjectPrefabs.");
         return null;
     }
+    public void LoadPreviewData(string filePathAndName, SaveLoadButton saveLoadButton)
+    {
+        string fileData = File.ReadAllText(filePathAndName);
+        string jsonData = Decode(fileData);
+        PreviewData data = JsonUtility.FromJson<PreviewData>(jsonData);
+        saveLoadButton.texts[0].text = data.playerData.playerName;
+        saveLoadButton.texts[1].text = $"{data.playerData.playTime / 60 / 60:00}:{data.playerData.playTime / 60:00}:{data.playerData.playTime % 60:00}";
+        saveLoadButton.texts[2].text = data.dateAndTime;
+    }
+
 
     public void LoadWorld(string fileName)
     {
@@ -147,8 +157,18 @@ public class WorldManager : MonoBehaviour
 
     }
 }
+// K‰ytet‰‰n previewdataa n‰ytt‰m‰‰n tallennus / latausnappuloissa t‰rkeimm‰t tiedot, eli
+// pelajaan nimen, peliajan sek‰ tallennusp‰iv‰m‰‰r‰n.
+public class PreviewData
+{
+    public string dateAndTime;
+    public PlayerData playerData;
+}
+
+// WorldData luokassa pidet‰‰n KAIKKEA maailmasta tallennettavaksi haluttavia objekteja.
 public class WorldData
 {
+    public string dateAndTime;
     public PlayerData playerData;
     public CollectibleData[] collectibles;
 }
